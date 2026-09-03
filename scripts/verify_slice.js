@@ -11,7 +11,7 @@ async function runVerification() {
   await server.listen();
   console.log('Vite server running on http://localhost:3000');
 
-  const artifactDir = '/home/jchin/.gemini/antigravity/brain/5dcd9201-b4e4-41aa-b243-510ee806ab35';
+  const artifactDir = '/home/jchin/.gemini/antigravity/brain/8929e4c7-31f2-4eae-ace2-eaed46e286e0';
   if (!fs.existsSync(artifactDir)) {
     fs.mkdirSync(artifactDir, { recursive: true });
   }
@@ -128,6 +128,63 @@ async function runVerification() {
   });
   await new Promise((r) => setTimeout(r, 500));
   await saveScreenshot('screenshot_inventory.png');
+
+  // Close menu for in-game captures
+  await page.evaluate(() => {
+    const g = window.gameInstance;
+    if (g && g.ui) {
+      g.ui.closePanel();
+    }
+  });
+
+  // Screenshot 5: Sector 5 Cyber City Plaza & Skyline
+  console.log('Capturing Screenshot 5: Cyber City Plaza & Skyline...');
+  await page.evaluate(() => {
+    const g = window.gameInstance;
+    if (g) {
+      g.player.position.set(-90, 4.4, -58);
+      g.player.yaw = 0; // Facing North towards clinic and high-rise billboard
+      g.player.pitch = 0.08;
+      g.update(0.016);
+      g.render();
+    }
+  });
+  await new Promise((r) => setTimeout(r, 500));
+  await saveScreenshot('screenshot_cyber_plaza.png');
+
+  // Screenshot 6: The Glitch Cantina Social Lounge Interior
+  console.log('Capturing Screenshot 6: The Glitch Cantina Interior...');
+  await page.evaluate(() => {
+    const g = window.gameInstance;
+    if (g) {
+      g.player.position.set(-105.0, 4.4, -70);
+      g.player.yaw = Math.PI / 2; // Facing West towards the glowing bar counter and Synthetica terminal
+      g.player.pitch = -0.05;
+      g.update(0.016);
+      g.render();
+    }
+  });
+  await new Promise((r) => setTimeout(r, 500));
+  await saveScreenshot('screenshot_cyber_cantina.png');
+
+  // Screenshot 7: Corrupted Data Vault Combat Encounter
+  console.log('Capturing Screenshot 7: Corrupted Data Vault Combat Encounter...');
+  await page.evaluate(() => {
+    const g = window.gameInstance;
+    if (g) {
+      g.player.position.set(-77.0, 4.4, -70);
+      g.player.yaw = -Math.PI / 2; // Facing East towards the syndicate heavy and pulsing data core
+      g.player.pitch = -0.02;
+      // Alert enemies in the vault
+      const vaultEnemies = g.enemies.enemies.filter((e) => e.position.x > -76 && e.position.x < -64);
+      vaultEnemies.forEach((e) => (e.state = 'engage'));
+      g.weapons.fire(g.player, performance.now() / 1000);
+      g.update(0.016);
+      g.render();
+    }
+  });
+  await new Promise((r) => setTimeout(r, 400));
+  await saveScreenshot('screenshot_cyber_combat.png');
 
   console.log('Verification summary:');
   console.log(`Console message count: ${consoleLogs.length}`);

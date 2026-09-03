@@ -39,6 +39,12 @@ export class EnemyManager {
     this.spawnEnemy('heavy', 80, 35, 3);
     this.spawnEnemy('drone', 90, 60, 2);
     this.spawnEnemy('drone', -30, 20, 1);
+
+    // 4. Hostile Syndicate forces inside Sector 5 Corrupted Data Vault (-72, 4.0, -70)
+    this.spawnEnemy('heavy', -70, -70, 3);
+    this.spawnEnemy('skirmisher', -74, -72, 2);
+    this.spawnEnemy('rusher', -74, -68, 2);
+    this.spawnEnemy('drone', -68, -69, 2);
   }
 
   public raycastHit(ray: THREE.Ray): { hit: boolean; enemy?: Enemy; distance: number; point: THREE.Vector3 } {

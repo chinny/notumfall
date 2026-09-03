@@ -87,8 +87,10 @@ window.addEventListener('DOMContentLoaded', () => {
       game.audio.playReload();
     }
 
-    // Weapon switching (5, 6, 7 or Q, E)
-    if (e.code === 'Digit5' || e.code === 'KeyQ') {
+    // Kiosk interaction or Weapon switching
+    if ((e.code === 'KeyE' || e.code === 'KeyF') && game.activeKiosk) {
+      game.interactWithActiveKiosk();
+    } else if (e.code === 'Digit5' || e.code === 'KeyQ') {
       game.weapons.switchWeapon('pistol');
       game.audio.playClick();
     } else if (e.code === 'Digit6') {

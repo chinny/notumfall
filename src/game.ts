@@ -5,6 +5,8 @@ import { Terrain } from './world/terrain';
 import { DesertEnvironment } from './world/skybox';
 import { WorldStructures } from './world/structures';
 import { WorldProps } from './world/props';
+import { CyberCity } from './world/cyber_city';
+import { InteractiveKiosk } from './world/cyber_interiors';
 import { WeaponManager } from './combat/weapon_manager';
 import { EnemyManager } from './combat/enemy_manager';
 import { CharacterSheet } from './rpg/character';
@@ -24,8 +26,13 @@ export class Game {
   public terrain: Terrain;
   public environment?: DesertEnvironment;
   public structures: WorldStructures;
+  public cyberCity: CyberCity;
   public props: WorldProps;
   public player: PlayerController;
+
+  // Social & Kiosk interaction
+  public activeKioskPrompt: string | null = null;
+  public activeKiosk: InteractiveKiosk | null = null;
 
   // RPG & Combat Systems
   public character: CharacterSheet;
@@ -71,6 +78,9 @@ export class Game {
 
     this.structures = new WorldStructures(this.physics);
     this.scene.add(this.structures.group);
+
+    this.cyberCity = new CyberCity(this.physics);
+    this.scene.add(this.cyberCity.group);
 
     this.props = new WorldProps(this.physics, this.terrain);
     this.scene.add(this.props.group);
@@ -178,8 +188,48 @@ export class Game {
       SaveSystem.saveToLocalStorage(this.player, this.character, this.factions, this.missions, this.programs);
     }
 
-    // 8. Update HUD
+    // 8. Kiosk proximity check
+    this.checkKiosks();
+
+    // 9. Update HUD
     this.updateHUD();
+  }
+
+  public checkKiosks(): void {
+    const p = this.player.position;
+    this.activeKiosk = null;
+    this.activeKioskPrompt = null;
+
+    for (const kiosk of this.cyberCity.kiosks) {
+      if (p.distanceTo(kiosk.position) <= kiosk.interactionRadius) {
+        this.activeKiosk = kiosk;
+        this.activeKioskPrompt = kiosk.prompt;
+        break;
+      }
+    }
+
+    if (typeof document !== 'undefined') {
+      const alertEl = document.getElementById('hud-alerts');
+      if (alertEl && this.activeKioskPrompt) {
+        alertEl.textContent = this.activeKioskPrompt;
+        alertEl.style.color = '#00f0ff';
+      }
+    }
+  }
+
+  public interactWithActiveKiosk(): string | null {
+    if (this.activeKiosk) {
+      const msg = this.activeKiosk.action(this);
+      if (typeof document !== 'undefined') {
+        const alertEl = document.getElementById('hud-alerts');
+        if (alertEl) {
+          alertEl.textContent = msg;
+          alertEl.style.color = '#ffaa33';
+        }
+      }
+      return msg;
+    }
+    return null;
   }
 
   private updateHUD() {
@@ -199,8 +249,23 @@ export class Game {
       const dCorp = Math.hypot(p.x - 0, p.z - (-60));
       const dClan = Math.hypot(p.x - (-80), p.z - 70);
       const dProc = Math.hypot(p.x - 85, p.z - 45);
+      const dCyber = Math.hypot(p.x - (-90), p.z - (-70));
+      const dCantina = Math.hypot(p.x - (-108), p.z - (-70));
+      const dClinic = Math.hypot(p.x - (-90), p.z - (-88));
+      const dMarket = Math.hypot(p.x - (-90), p.z - (-52));
+      const dVault = Math.hypot(p.x - (-72), p.z - (-70));
 
-      if (dCorp < 20) {
+      if (dCantina < 7.5) {
+        zoneEl.textContent = 'THE GLITCH CANTINA // SECTOR 5';
+      } else if (dClinic < 7.5) {
+        zoneEl.textContent = 'CHROME & FLESH CLINIC // SECTOR 5';
+      } else if (dMarket < 7.5) {
+        zoneEl.textContent = 'SUB-NET BLACK MARKET // SECTOR 5';
+      } else if (dVault < 8.5) {
+        zoneEl.textContent = 'CORRUPTED DATA VAULT [HOSTILE] // SECTOR 5';
+      } else if (dCyber < 35) {
+        zoneEl.textContent = 'NEON SPRAWL // SECTOR 5 (SOCIAL HUB)';
+      } else if (dCorp < 20) {
         zoneEl.textContent = 'CORPORATE OUTPOST // SECTOR 1';
       } else if (dClan < 22) {
         zoneEl.textContent = 'CLAN CANYON ENCAMPMENT // SECTOR 2';

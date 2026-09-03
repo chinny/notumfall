@@ -54,12 +54,17 @@ Harness the anomalous mineral *Notum* through six equippable programs powered by
 - **Dynamic Faction Reputation**: Reputation scales from $-100$ to $+100$ for Omni-Mineral Corp and Free Miners Clan.
 - **Consequences**: Faction standings gate vendor shop tiers (`restricted`, `standard`, `elite`) and trigger live guard hostility when standing drops below $-25$.
 
-### 6. World Design & Three Interiors
+### 6. World Design, Social Hub & Enterable Interiors
 - **Sector 4 (400m x 400m Continuous Map)**: Procedural dune elevation with analytical normals, mesa plateau, canyon depression, perimeter containment cliffs, and mineral deposits.
 - **Corporate Outpost (Sector 1)**: Brutalist white-and-orange concrete bunker with central holographic dispatch terminal and security lighting.
 - **Clan Canyon Encampment (Sector 2)**: Scrap-metal enclave nestled in the canyon depression with shade canopies, scavenged catwalks, and rebel vendors.
 - **Abandoned Extraction Facility (Sector 3)**: Industrial complex housing a glowing Notum vat, elevated catwalks, and heavy refining machinery.
-- **Procedural Props**: Mining pipelines, sensor warning pylons with holographic rings, drilling rigs, and sandstone boulders.
+- **Sector 5: Neon Sprawl (Cyberpunk Social Hub)**: Elevated high-tech city plaza at `(-90, 4.0, -70)` with approach ramps, neon street lamps, floating holographic spire, rooftop billboard, and four enterable buildings:
+  - *The Glitch Cantina*: Social lounge with neon bar counter, stools, and `Synthetica Bartender AI` energy recharge kiosk.
+  - *Chrome & Flesh Cyber-Clinic*: Med-tech lab with surgical telemetry arch and `Dr. Vane` full nanite healing station.
+  - *Sub-Net Black Market*: Server rack trade enclave with contraband crates and underground syndicate bounty terminal.
+  - *Corrupted Data Vault [Hostile]*: Fortified hazard bunker occupied by hostile Syndicate forces (Heavy Enforcer, Shock Trooper, Drone, Rusher) guarding a hackable Data Core.
+- **Procedural Props & Textures**: Bespoke generated cyberpunk textures (wet asphalt, facade panels, neon signs, interior circuits, hazard plating), mining pipelines, sensor warning pylons, drilling rigs, and sandstone boulders.
 
 ### 7. Audio, UI & Persistence
 - **Web Audio API Synthesizer**: Procedural soundscapes with zero audio files — LFO-modulated ambient wind pad, weapon transients, reload clicks, and UI feedback tones.
@@ -80,9 +85,11 @@ Harness the anomalous mineral *Notum* through six equippable programs powered by
 | **Space** | Jump |
 | **Left Click** | Fire Active Weapon |
 | **R** | Reload Weapon |
+| **E / F** | Interact with Social Kiosks / Terminals |
+| **Q / 5, 6, 7** | Switch Weapons (Pistol / Rifle / Beam) |
 | **1, 2, 3, 4** | Cast Programmable-Matter Abilities |
 | **C** | Open / Close Character Sheet |
-| **I** | Open / Close Inventory & Cybernetic Implants |
+| **I / Tab** | Open / Close Inventory & Cybernetic Implants |
 | **P** | Open / Close Programs Hotbar Manager |
 | **M** | Open / Close Mission Terminal & Faction Rep |
 | **Escape** | Close All Open Panels / Exit Pointer Lock |
@@ -110,7 +117,7 @@ notumfall/
 │   ├── player/        # First-person controller, camera, movement physics
 │   ├── rpg/           # 8-attribute system, leveling, implants, gear requirements
 │   ├── ui/            # HUD, responsive fullscreen modal panels
-│   ├── world/         # Procedural terrain, skybox, structures, and props
+│   ├── world/         # Procedural terrain, skybox, structures, cyber city, and props
 │   ├── game.ts        # Main game coordinator and loop
 │   └── main.ts        # Entrypoint, input handling, and event routing
 ├── tests/             # Comprehensive Vitest acceptance test suites
@@ -152,13 +159,13 @@ Compiles TypeScript and produces an optimized production bundle in `dist/`.
 ```bash
 npm run test
 ```
-Executes all 23 acceptance tests across 9 suites verifying controller physics, weapon DPS, enemy AI, implant puzzles, program abilities, missions, UI scaling, and 60-second synthetic simulation.
+Executes all 28 acceptance tests across 10 suites verifying controller physics, weapon DPS, enemy AI, implant puzzles, program abilities, missions, Sector 5 Cyber City buildings & kiosks, UI scaling, and 60-second synthetic simulation.
 
 ### Automated Browser Verification
 ```bash
 node scripts/verify_slice.js
 ```
-Runs a headless Chromium session, audits the browser console for zero uncaught errors, and captures 1920x1080 gameplay screenshots of the spawn point, interior, combat encounter, and inventory screen.
+Runs a headless Chromium session, audits the browser console for zero uncaught errors, and captures 1920x1080 gameplay screenshots of the spawn point, interior, combat encounter, inventory screen, Cyber City plaza, cantina lounge, and vault combat.
 
 ---
 

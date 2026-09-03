@@ -18,7 +18,10 @@ export const VALID_MAP_LOCATIONS: MissionLocation[] = [
   { id: 'facility', name: 'Extraction Facility Interior', position: new THREE.Vector3(85, 2, 45), isReachable: true },
   { id: 'north_claim', name: 'North Mining Drill Rig', position: new THREE.Vector3(50, 4, -80), isReachable: true },
   { id: 'dune_basin', name: 'South-East Sand Dunes', position: new THREE.Vector3(60, 2, 60), isReachable: true },
-  { id: 'west_ridge', name: 'West Ridge Checkpoint', position: new THREE.Vector3(-50, 5, 0), isReachable: true }
+  { id: 'west_ridge', name: 'West Ridge Checkpoint', position: new THREE.Vector3(-50, 5, 0), isReachable: true },
+  { id: 'cyber_plaza', name: 'Sector 5: Neon Sprawl Plaza', position: new THREE.Vector3(-90, 4, -70), isReachable: true },
+  { id: 'data_vault', name: 'Sector 5: Corrupted Data Vault', position: new THREE.Vector3(-72, 4, -70), isReachable: true },
+  { id: 'cantina', name: 'Sector 5: The Glitch Cantina', position: new THREE.Vector3(-108, 4, -70), isReachable: true }
 ];
 
 export interface Mission {

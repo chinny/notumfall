@@ -106,6 +106,14 @@ export class Terrain {
       procTerraceWeight = t * t;
     }
 
+    // Cyber City (Sector 5) elevated plateau near (-90, -70), radius 45m
+    const distToCyber = Math.hypot(x - (-90), z - (-70));
+    let cyberPlateauWeight = 0;
+    if (distToCyber < 45) {
+      const t = 1.0 - Math.min(1.0, distToCyber / 45);
+      cyberPlateauWeight = t * t * (3 - 2 * t);
+    }
+
     // Dunes and terrain swells
     const d1 = Math.sin(x * 0.02 + z * 0.015) * 3.0;
     const d2 = Math.cos(x * 0.04 - z * 0.035) * 1.5;
@@ -116,10 +124,12 @@ export class Terrain {
     const naturalHeight = dunes + clanCanyonDepth;
     const corpBase = 3.0;
     const procBase = 1.5;
+    const cyberBase = 4.0;
 
     let finalH = naturalHeight;
     finalH = THREE.MathUtils.lerp(finalH, corpBase, corpPlateauWeight * 0.95);
     finalH = THREE.MathUtils.lerp(finalH, procBase, procTerraceWeight * 0.9);
+    finalH = THREE.MathUtils.lerp(finalH, cyberBase, cyberPlateauWeight * 0.96);
     finalH += edgeCliff;
 
     return finalH;
