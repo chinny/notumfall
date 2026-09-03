@@ -22,9 +22,37 @@ export class TargetDummy {
     this.mesh.position.copy(pos);
 
     // Visual Mesh: base, torso, bullseye target
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0x3a4048, roughness: 0.8 });
-    const targetMat = new THREE.MeshStandardMaterial({ color: 0xff3333, roughness: 0.4 });
-    const coreMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+    let targetTexture: THREE.CanvasTexture | null = null;
+    if (typeof document !== 'undefined') {
+      try {
+        const cvs = document.createElement('canvas');
+        cvs.width = 256;
+        cvs.height = 256;
+        const ctx = cvs.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = '#b52b27';
+          ctx.fillRect(0, 0, 256, 256);
+          const rings = [105, 80, 55, 30, 12];
+          rings.forEach((r, idx) => {
+            ctx.beginPath();
+            ctx.arc(128, 128, r, 0, Math.PI * 2);
+            ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : '#b52b27';
+            ctx.fill();
+          });
+          ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(128, 10); ctx.lineTo(128, 246);
+          ctx.moveTo(10, 128); ctx.lineTo(246, 128);
+          ctx.stroke();
+          targetTexture = new THREE.CanvasTexture(cvs);
+        }
+      } catch (e) {}
+    }
+
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0x2e333a, roughness: 0.8 });
+    const targetMat = new THREE.MeshStandardMaterial({ color: 0x992222, roughness: 0.5 });
+    const coreMat = new THREE.MeshStandardMaterial({ map: targetTexture, color: 0xffffff, roughness: 0.3 });
 
     const base = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.7, 0.3, 16), baseMat);
     base.position.y = 0.15;
@@ -38,7 +66,7 @@ export class TargetDummy {
     torso.position.y = 1.2;
     this.mesh.add(torso);
 
-    const bullseye = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.32, 16), coreMat);
+    const bullseye = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.32, 16), coreMat);
     bullseye.rotation.x = Math.PI / 2;
     bullseye.position.y = 1.2;
     this.mesh.add(bullseye);

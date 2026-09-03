@@ -7,6 +7,7 @@
 - Step-up on <= 0.4m ledges is resolved by checking obstacle top height against foot elevation and verifying vertical clearance.
 - Three distinct interior structures: Corporate Outpost (brutalist bunker), Clan Encampment (canyon enclave), and Abandoned Processing Facility.
 - Primitive-composed procedural props (pipelines, drill rigs, warning pylons, boulders) automatically register solid bounding colliders in PhysicsWorld.
+- Generated bespoke surface textures via nano banana (desert sand ripples, notum crystal ore, brutalist concrete panels, scavenged clan metal) and integrated them into Three.js MeshStandardMaterial with texture repeating.
 - Weapon DPS tracking calculates damage over elapsed fire intervals and auto-resets after 3 seconds of dummy inactivity.
 - Enemy state machine alerts all allies within 30m upon entering combat engagement.
 - Unstick watchdog applies perpendicular evasion impulses when forward movement stalls for > 0.4s to guarantee navigation without getting stuck for > 3s.

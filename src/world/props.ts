@@ -14,8 +14,17 @@ export class WorldProps {
 
   // 1. Industrial Mining Pipelines
   private spawnMiningPipelines() {
-    const pipeMat = new THREE.MeshStandardMaterial({ color: 0x48525b, roughness: 0.6, metalness: 0.8 });
-    const pylonMat = new THREE.MeshStandardMaterial({ color: 0xff6600, roughness: 0.5, metalness: 0.4 });
+    let pipeMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        pipeMap = new THREE.TextureLoader().load('/textures/pipeline.jpg');
+        pipeMap.wrapS = THREE.RepeatWrapping;
+        pipeMap.wrapT = THREE.RepeatWrapping;
+        pipeMap.repeat.set(1, 4);
+      } catch (e) {}
+    }
+    const pipeMat = new THREE.MeshStandardMaterial({ map: pipeMap, color: 0xffffff, roughness: 0.6, metalness: 0.8 });
+    const pylonMat = new THREE.MeshStandardMaterial({ map: pipeMap, color: 0xff6600, roughness: 0.5, metalness: 0.4 });
 
     // Pipeline running from (10, -50) toward (70, 30)
     const count = 7;
@@ -54,7 +63,16 @@ export class WorldProps {
 
   // 2. Corporate Holographic Boundary Pylons
   private spawnWarningPylons() {
-    const pylonMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.7, metalness: 0.3 });
+    let pylonMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        pylonMap = new THREE.TextureLoader().load('/textures/pylon.jpg');
+        pylonMap.wrapS = THREE.RepeatWrapping;
+        pylonMap.wrapT = THREE.RepeatWrapping;
+        pylonMap.repeat.set(1, 2);
+      } catch (e) {}
+    }
+    const pylonMat = new THREE.MeshStandardMaterial({ map: pylonMap, color: 0xffffff, roughness: 0.7, metalness: 0.3 });
     const holoMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.7, wireframe: true });
 
     const pylonPositions = [
@@ -84,8 +102,17 @@ export class WorldProps {
 
   // 3. Mining Drill Towers
   private spawnDrillTowers() {
-    const towerMat = new THREE.MeshStandardMaterial({ color: 0x4a4e54, roughness: 0.8, metalness: 0.5 });
-    const drillMat = new THREE.MeshStandardMaterial({ color: 0xcc5500, roughness: 0.4, metalness: 0.6 });
+    let drillMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        drillMap = new THREE.TextureLoader().load('/textures/drill.jpg');
+        drillMap.wrapS = THREE.RepeatWrapping;
+        drillMap.wrapT = THREE.RepeatWrapping;
+        drillMap.repeat.set(2, 3);
+      } catch (e) {}
+    }
+    const towerMat = new THREE.MeshStandardMaterial({ map: drillMap, color: 0xcccccc, roughness: 0.8, metalness: 0.5 });
+    const drillMat = new THREE.MeshStandardMaterial({ map: drillMap, color: 0xff8833, roughness: 0.4, metalness: 0.6 });
 
     const towerLocations = [
       new THREE.Vector3(50, 0, -80),
@@ -116,7 +143,16 @@ export class WorldProps {
 
   // 4. Natural Desert Boulders
   private spawnRockFormations() {
-    const rockMat = new THREE.MeshStandardMaterial({ color: 0x826c58, roughness: 0.95 });
+    let rockMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        rockMap = new THREE.TextureLoader().load('/textures/rock.jpg');
+        rockMap.wrapS = THREE.RepeatWrapping;
+        rockMap.wrapT = THREE.RepeatWrapping;
+        rockMap.repeat.set(1.5, 1.5);
+      } catch (e) {}
+    }
+    const rockMat = new THREE.MeshStandardMaterial({ map: rockMap, color: 0xddbbaa, roughness: 0.95 });
     const clusters = [
       { x: -30, z: 20, size: 2.5 },
       { x: 20, z: 50, size: 3.2 },
