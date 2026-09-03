@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <title>NOTUMFALL // SCI-FI ACTION-RPG</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0c0e12;
+      font-family: 'Courier New', Courier, monospace;
+      color: #e0f2f1;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    /* Reticle / Crosshair */
+    #crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 10;
+    }
+    #crosshair::before, #crosshair::after {
+      content: '';
+      position: absolute;
+      background: #00f0ff;
+    }
+    #crosshair::before {
+      top: 4px; left: 0; width: 10px; height: 2px;
+    }
+    #crosshair::after {
+      top: 0; left: 4px; width: 2px; height: 10px;
+    }
+
+    /* HUD Layout */
+    #hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 32px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    /* Top Bar: Compass and Zone Banner */
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .hud-zone {
+      background: rgba(10, 16, 22, 0.75);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 2px;
+      color: #ffaa33;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .hud-compass {
+      background: rgba(8, 12, 16, 0.8);
+      border-bottom: 2px solid #00f0ff;
+      padding: 4px 20px;
+      color: #00f0ff;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      min-width: 120px;
+    }
+    .hud-status-alerts {
+      min-width: 160px;
+      text-align: right;
+      color: #88c0d0;
+    }
+
+    /* Bottom Bar: Health, Energy, Weapon, Abilities */
+    .hud-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+    }
+    .vitals-panel {
+      background: rgba(8, 14, 20, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-left: 4px solid #00f0ff;
+      padding: 12px 18px;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bar-label {
+      width: 45px;
+      font-weight: bold;
+      color: #88c0d0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+    }
+    .bar-fill-hp {
+      height: 100%;
+      width: 100%;
+      background: #ff3b30;
+      transition: width 0.15s ease-out;
+    }
+    .bar-fill-notum {
+      height: 100%;
+      width: 100%;
+      background: #00f0ff;
+      transition: width 0.15s ease-out;
+    }
+    .bar-val {
+      width: 60px;
+      text-align: right;
+      font-weight: bold;
+    }
+
+    /* Programs / Ability Hotbar */
+    .programs-hotbar {
+      display: flex;
+      gap: 10px;
+      background: rgba(8, 14, 20, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 8px 14px;
+      border-radius: 2px;
+    }
+    .program-slot {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      background: rgba(0, 40, 50, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      color: #c0ffff;
+      text-align: center;
+    }
+    .slot-key {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 9px;
+      color: #ffaa33;
+      font-weight: bold;
+    }
+    .slot-cd {
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      font-size: 10px;
+      color: #ff4444;
+      font-weight: bold;
+    }
+    .slot-cost {
+      position: absolute;
+      bottom: 2px;
+      left: 3px;
+      font-size: 9px;
+      color: #00f0ff;
+    }
+
+    /* Weapon / Ammo display */
+    .weapon-panel {
+      background: rgba(8, 14, 20, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 170, 51, 0.4);
+      border-right: 4px solid #ffaa33;
+      padding: 12px 18px;
+      min-width: 220px;
+      text-align: right;
+    }
+    .weapon-name {
+      color: #ffaa33;
+      font-size: 15px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .ammo-count {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 2px;
+    }
+    .ammo-reserve {
+      font-size: 14px;
+      color: #88c0d0;
+    }
+
+    /* Click-to-Play Overlay */
+    #start-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 9, 12, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      cursor: pointer;
+    }
+    .title-box {
+      border: 1px solid #00f0ff;
+      background: rgba(0, 30, 40, 0.6);
+      padding: 30px 50px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+    }
+    .title-box h1 {
+      font-size: 42px;
+      letter-spacing: 8px;
+      color: #00f0ff;
+      margin-bottom: 10px;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    }
+    .title-box h3 {
+      font-size: 15px;
+      letter-spacing: 3px;
+      color: #ffaa33;
+      margin-bottom: 24px;
+    }
+    .start-prompt {
+      display: inline-block;
+      padding: 10px 24px;
+      background: #00f0ff;
+      color: #04090c;
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 2px;
+      border-radius: 2px;
+      margin-top: 10px;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.75; transform: scale(0.98); }
+    }
+    .controls-hint {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #7a9aa6;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    /* Full-screen UI Panels (Inventory, Character Sheet, Mission Log) */
+    .menu-modal {
+      position: absolute;
+      inset: 40px 60px;
+      background: rgba(10, 15, 20, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid #00f0ff;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      padding: 24px 30px;
+      color: #e0f2f1;
+    }
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(0, 240, 255, 0.4);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .menu-title {
+      font-size: 20px;
+      color: #00f0ff;
+      letter-spacing: 3px;
+      font-weight: bold;
+    }
+    .menu-nav {
+      display: flex;
+      gap: 12px;
+    }
+    .nav-tab {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 6px 14px;
+      color: #88c0d0;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .nav-tab.active {
+      background: #00f0ff;
+      color: #04090c;
+      font-weight: bold;
+    }
+    .menu-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      gap: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="crosshair"></div>
+
+  <!-- In-game HUD -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-zone" id="zone-name">SECTOR 4: PARCHED VALE</div>
+      <div class="hud-compass" id="compass-heading">N 000°</div>
+      <div class="hud-status-alerts" id="hud-alerts">CORP: NEUTRAL // CLAN: HOSTILE</div>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="vitals-panel">
+        <div class="bar-row">
+          <span class="bar-label">HP</span>
+          <div class="bar-track"><div class="bar-fill-hp" id="hp-fill"></div></div>
+          <span class="bar-val" id="hp-text">100/100</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">NOTUM</span>
+          <div class="bar-track"><div class="bar-fill-notum" id="notum-fill"></div></div>
+          <span class="bar-val" id="notum-text">80/80</span>
+        </div>
+      </div>
+
+      <div class="programs-hotbar" id="programs-bar">
+        <div class="program-slot" id="slot-1"><span class="slot-key">1</span><span class="slot-name">NUKE</span><span class="slot-cd"></span></div>
+        <div class="program-slot" id="slot-2"><span class="slot-key">2</span><span class="slot-name">REPAIR</span><span class="slot-cd"></span></div>
+        <div class="program-slot" id="slot-3"><span class="slot-key">3</span><span class="slot-name">SHIELD</span><span class="slot-cd"></span></div>
+        <div class="program-slot" id="slot-4"><span class="slot-key">4</span><span class="slot-name">BLINK</span><span class="slot-cd"></span></div>
+      </div>
+
+      <div class="weapon-panel">
+        <div class="weapon-name" id="weapon-name">CORP AR-12 RIFLE</div>
+        <div class="ammo-display">
+          <span class="ammo-count" id="ammo-clip">24</span> / <span class="ammo-reserve" id="ammo-reserve">120</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Multi-Panel Modal (Tab / I / C / M) -->
+  <div class="menu-modal" id="system-menu">
+    <div class="menu-header">
+      <div class="menu-title" id="menu-title">NEURAL INTERFACE // TERMINAL</div>
+      <div class="menu-nav">
+        <button class="nav-tab active" id="tab-char" data-panel="panel-char">CHARACTER [C]</button>
+        <button class="nav-tab" id="tab-inv" data-panel="panel-inv">INVENTORY [I]</button>
+        <button class="nav-tab" id="tab-prog" data-panel="panel-prog">PROGRAMS [P]</button>
+        <button class="nav-tab" id="tab-missions" data-panel="panel-missions">MISSIONS [M]</button>
+        <button class="nav-tab" id="btn-close-menu">CLOSE [ESC]</button>
+      </div>
+    </div>
+    <div class="menu-body" id="menu-content">
+      <!-- Dynamic panel content rendered by UI system -->
+    </div>
+  </div>
+
+  <!-- Click to Play Overlay -->
+  <div id="start-overlay">
+    <div class="title-box">
+      <h1>NOTUMFALL</h1>
+      <h3>PARCHED WORLD // CORPORATE OCCUPATION</h3>
+      <div class="start-prompt">CLICK TO INITIALIZE LINK</div>
+      <div class="controls-hint">
+        WASD: Move &nbsp;|&nbsp; MOUSE: Look &nbsp;|&nbsp; SHIFT: Sprint &nbsp;|&nbsp; SPACE: Jump &nbsp;|&nbsp; C: Crouch<br/>
+        LMB: Fire Weapon &nbsp;|&nbsp; R: Reload &nbsp;|&nbsp; 1-4: Cast Programs<br/>
+        TAB / I: Inventory &nbsp;|&nbsp; C: Character Sheet &nbsp;|&nbsp; M: Missions
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

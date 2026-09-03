@@ -1,0 +1,22 @@
+{
+  "name": "notumfall",
+  "version": "1.0.0",
+  "description": "Playable vertical slice of Notumfall",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.4",
+    "happy-dom": "^20.13.2",
+    "puppeteer": "^25.9.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "three": "^0.185.1"
+  }
+}
