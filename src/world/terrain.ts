@@ -48,7 +48,21 @@ export class Terrain {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.computeVertexNormals();
 
+    let sandMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        const loader = new THREE.TextureLoader();
+        sandMap = loader.load('/textures/sand.jpg');
+        sandMap.wrapS = THREE.RepeatWrapping;
+        sandMap.wrapT = THREE.RepeatWrapping;
+        sandMap.repeat.set(40, 40);
+      } catch (e) {
+        // Fallback to vertex colors
+      }
+    }
+
     const material = new THREE.MeshStandardMaterial({
+      map: sandMap,
       vertexColors: true,
       roughness: 0.88,
       metalness: 0.12,

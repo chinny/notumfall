@@ -23,7 +23,16 @@ export class WorldStructures {
     const cx = 0, cy = 3.2, cz = -60;
     outpost.position.set(cx, cy, cz);
 
-    const whiteMat = new THREE.MeshStandardMaterial({ color: 0xdedede, roughness: 0.8, metalness: 0.1 });
+    let concreteMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        concreteMap = new THREE.TextureLoader().load('/textures/concrete.jpg');
+        concreteMap.wrapS = THREE.RepeatWrapping;
+        concreteMap.wrapT = THREE.RepeatWrapping;
+        concreteMap.repeat.set(2, 1.5);
+      } catch (e) {}
+    }
+    const whiteMat = new THREE.MeshStandardMaterial({ map: concreteMap, color: 0xffffff, roughness: 0.8, metalness: 0.1 });
     const orangeMat = new THREE.MeshStandardMaterial({ color: 0xff5500, roughness: 0.5, metalness: 0.2 });
     const darkFloorMat = new THREE.MeshStandardMaterial({ color: 0x24282e, roughness: 0.9 });
     const holoMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.6, wireframe: true });
@@ -115,7 +124,16 @@ export class WorldStructures {
     const cx = -80, cy = -2.0, cz = 70;
     encampment.position.set(cx, cy, cz);
 
-    const scrapMat = new THREE.MeshStandardMaterial({ color: 0x5a524b, roughness: 0.95, metalness: 0.6 });
+    let scrapMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        scrapMap = new THREE.TextureLoader().load('/textures/clan_metal.jpg');
+        scrapMap.wrapS = THREE.RepeatWrapping;
+        scrapMap.wrapT = THREE.RepeatWrapping;
+        scrapMap.repeat.set(3, 3);
+      } catch (e) {}
+    }
+    const scrapMat = new THREE.MeshStandardMaterial({ map: scrapMap, color: 0xffffff, roughness: 0.95, metalness: 0.6 });
     const rustMat = new THREE.MeshStandardMaterial({ color: 0x8a4524, roughness: 0.9, metalness: 0.4 });
     const tarpMat = new THREE.MeshStandardMaterial({ color: 0x9a8060, roughness: 1.0 });
 
@@ -189,13 +207,23 @@ export class WorldStructures {
     const cx = 85, cy = 1.8, cz = 45;
     facility.position.set(cx, cy, cz);
 
+    let notumMap: THREE.Texture | null = null;
+    if (typeof window !== 'undefined' && typeof Image !== 'undefined') {
+      try {
+        notumMap = new THREE.TextureLoader().load('/textures/notum.jpg');
+        notumMap.wrapS = THREE.RepeatWrapping;
+        notumMap.wrapT = THREE.RepeatWrapping;
+        notumMap.repeat.set(2, 1);
+      } catch (e) {}
+    }
     const industrialMat = new THREE.MeshStandardMaterial({ color: 0x363d44, roughness: 0.75, metalness: 0.7 });
     const vatGlassMat = new THREE.MeshStandardMaterial({
+      map: notumMap,
       color: 0x00e5ff,
-      roughness: 0.1,
-      metalness: 0.2,
+      roughness: 0.2,
+      metalness: 0.3,
       transparent: true,
-      opacity: 0.75
+      opacity: 0.85
     });
 
     // Main hall floor: 18m x 14m
